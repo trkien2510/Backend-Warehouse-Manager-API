@@ -7,19 +7,24 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private Double price;
     private String note;
+    @Column(nullable = false)
     private int quantity;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
+    @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Product() {

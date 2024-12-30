@@ -7,12 +7,13 @@ public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String contactInfo;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Supplier() {

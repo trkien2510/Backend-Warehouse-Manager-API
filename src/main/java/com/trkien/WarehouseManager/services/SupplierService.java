@@ -8,6 +8,7 @@ import com.trkien.WarehouseManager.entity.User;
 import com.trkien.WarehouseManager.exception.AppException;
 import com.trkien.WarehouseManager.exception.ErrorCode;
 import com.trkien.WarehouseManager.mapper.SupplierMapper;
+import com.trkien.WarehouseManager.repository.ProductRepository;
 import com.trkien.WarehouseManager.repository.SupplierRepository;
 import com.trkien.WarehouseManager.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,13 @@ import java.util.List;
 @Service
 public class SupplierService {
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
 
-    public SupplierService(UserRepository userRepository, SupplierRepository supplierRepository, SupplierMapper supplierMapper) {
+    public SupplierService(UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, SupplierMapper supplierMapper) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
         this.supplierMapper = supplierMapper;
     }
@@ -53,6 +56,10 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findByNameAndUserId(request.getName(), user.getId())
                 .orElseThrow(()->new AppException(ErrorCode.INVALID_KEY));
 
+        boolean hasProducts = productRepository.existsBySupplier(supplier);
+        if (hasProducts) {
+            return false;
+        }
         try {
             supplierRepository.delete(supplier);
             return true;

@@ -8,6 +8,7 @@ import com.trkien.WarehouseManager.exception.AppException;
 import com.trkien.WarehouseManager.exception.ErrorCode;
 import com.trkien.WarehouseManager.mapper.CategoryMapper;
 import com.trkien.WarehouseManager.repository.CategoryRepository;
+import com.trkien.WarehouseManager.repository.ProductRepository;
 import com.trkien.WarehouseManager.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,13 @@ import java.util.List;
 public class CategoryService {
     private static final Logger log = LoggerFactory.getLogger(CategoryService.class);
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public CategoryService(UserRepository userRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryService(UserRepository userRepository, ProductRepository productRepository, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
@@ -54,6 +57,11 @@ public class CategoryService {
 
         Category category = categoryRepository.findByNameAndUserId(request.getName(), user.getId())
                 .orElseThrow(()->new AppException(ErrorCode.INVALID_KEY));
+
+        boolean hasProducts = productRepository.existsByCategory(category);
+        if (hasProducts) {
+            return false;
+        }
 
         try {
             categoryRepository.delete(category);
