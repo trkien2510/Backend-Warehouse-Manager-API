@@ -24,8 +24,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public List<UserResponse> getAllUsers(String loggedInUsername) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
+        if (userRepository.existsByUsername(loggedInUsername)){
+            return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+        }
+        else {
+            throw new AppException(ErrorCode.INVALID_KEY);
+        }
     }
 
     public UserResponse register(UserCreateRequest request) {

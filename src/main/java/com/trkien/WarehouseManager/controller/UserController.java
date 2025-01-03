@@ -22,9 +22,12 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getAllUsers() {
+    ApiResponse<List<UserResponse>> getAllUsers(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        String loggedInUsername = jwtUtils.extractUsername(token);
+
         ApiResponse<List<UserResponse>> response = new ApiResponse<>();
-        response.setData(userService.getAllUsers());
+        response.setData(userService.getAllUsers(loggedInUsername));
         return response;
     }
 
